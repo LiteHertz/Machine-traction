@@ -1,0 +1,1 @@
+# Après avoir demandé à l'AI pour une structure de projet, j'ai déterminer qu'il serait mieux de créer cette structure de projet plus tard. Voir le README.md pour plus de détails.
