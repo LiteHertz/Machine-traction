@@ -10,4 +10,4 @@ Guide d'utilisation de GitHub:
 - Stage les changements
 - Laisser la description du commit
 - Commit
-- synchroniser la repo
+- Synchroniser la repo
