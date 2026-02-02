@@ -1,9 +1,11 @@
 // Encoder pins
 const int pinA = 2;  // Encoder output A
 const int pinB = 3;  // Encoder output B
+const int pinP = A0;  // Pression meter
 
 volatile long encoderPosition = 0;
 volatile bool lastAState;
+volatile int pressure;
 
 void setup() {
   pinMode(pinA, INPUT);
@@ -11,6 +13,7 @@ void setup() {
   
   // Read initial state
   lastAState = digitalRead(pinA);
+  pressure = analogRead(pinP);
 
   // Attach interrupt for pin A
   attachInterrupt(digitalPinToInterrupt(pinA), updateEncoder, CHANGE);
@@ -20,6 +23,8 @@ void setup() {
 
 void loop() {
   // Print the encoder position
+  Serial.print(pressure);
+  Serial.print(";");
   Serial.println(encoderPosition);
   delay(100);
 }
