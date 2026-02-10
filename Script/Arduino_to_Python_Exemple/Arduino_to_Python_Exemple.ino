@@ -11,10 +11,10 @@ void loop() {
   if (Serial.available() > 0){        //  Regarde s'il y a un message dans le serial
     String msg = Serial.readString(); //  Lit le message
 
-    if (msg == "ON" or "On" or "on"){
+    if (msg == "ON"){
       digitalWrite(intLight, HIGH);
     }
-    else if (msg == "OFF" or "Off" or "off")
+    else if (msg == "OFF"){
       digitalWrite(intLight, LOW);
     }
     else {
