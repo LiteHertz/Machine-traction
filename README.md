@@ -47,3 +47,5 @@ Python 3.x (.venv)
 Run code with global Python
 
 Use venv in terminal only (or vice versa)
+
+pip install -r requirements.txt
