@@ -11,11 +11,12 @@ void setup() {
 
 void loop() {
   int start = digitalRead(button);
-  if (start > 0){
-    digitalWrite(intLight, HIGH)
+  Serial.println(start);
+  if (start < 1){
+    digitalWrite(intLight, HIGH);
   }
   else {
-    digitalWrite(intLight, LOW)
+    digitalWrite(intLight, LOW);
   }
   // if (Serial.available() > 0){        //  Regarde s'il y a un message dans le serial
   //   String msg = Serial.readString(); //  Lit le message

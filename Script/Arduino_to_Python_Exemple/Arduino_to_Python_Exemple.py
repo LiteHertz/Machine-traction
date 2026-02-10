@@ -1,16 +1,34 @@
-# This is a sample Python script.
+import serial.tools.list_ports
 
-# Press Maj+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+serialInst = serial.Serial()
+serialInst.baudrate = 9600
+ports = serial.tools.list_ports.comports()
+portsList = []
+
+for p in ports:
+    portsList.append(str(p))
+    print(str(p))
+
+if portsList:
+    com = input("Select Arduino port by #: ")
+else:
+    com = ""
+    print("Connect Arduino to Computer")
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+for i in range(len(portsList)):
+    if portsList[i].startswith("COM" + com):
+        com = "COM" + str(com)
+        print(com + " is selected")
+    else:
+        print("Select valid COM number")
 
+serialInst.port = com
+serialInst.open()
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+while True:
+    command = input("Arduino Command (ON, OFF, exit): ")
+    serialInst.write(command.encode("utf-8"))
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    if command == "exit":
+        exit()
