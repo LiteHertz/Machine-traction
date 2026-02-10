@@ -3,27 +3,29 @@ import time as t
 
 serialInst = serial.Serial()
 serialInst.baudrate = 115200
-ports = serial.tools.list_ports.comports()
 portsList = []
 
-for p in ports:
-    portsList.append(str(p))
-    print(str(p))
+while len(portsList) == 0:
+    ports = serial.tools.list_ports.comports()
 
-if len(portsList) == 0:
-    com = ""
-    print("Connect Arduino to Computer")
-elif len(portsList) == 1:
-    com = portsList[0]
-    com = com[:4]
-else:
-    com = input("Select Arduino port by #: ")
-    for i in range(len(portsList)):
-        if portsList[i].startswith("COM" + com):
-            com = "COM" + str(com)
-            print(com + " is selected")
-        else:
-            print("Select valid COM number")
+    for p in ports:
+        portsList.append(str(p))
+        print(str(p))
+
+    if len(portsList) == 0:
+        print("Connect Arduino to Computer")
+        t.sleep(1)
+    elif len(portsList) == 1:
+        com = portsList[0]
+        com = com[:4]
+    else:
+        com = input("Select Arduino port by #: ")
+        for i in range(len(portsList)):
+            if portsList[i].startswith("COM" + com):
+                com = "COM" + str(com)
+                print(com + " is selected")
+            else:
+                print("Select valid COM number")
 
 serialInst.port = com
 t.sleep(1)
