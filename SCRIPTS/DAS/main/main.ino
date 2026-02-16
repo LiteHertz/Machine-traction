@@ -10,7 +10,7 @@ volatile long encoderPosition = 0;
 volatile bool lastAState;
 
 // ===== Sampling =====
-const unsigned long sampleInterval = 2000; // microseconds (500 Hz)
+const unsigned long sampleInterval = 2; // milliseconds (500 Hz)
 unsigned long lastSampleTime = 0;
 
 // ===== Filtering =====
@@ -31,7 +31,7 @@ void setup() {
 // ===== Main Loop =====
 void loop() {
 
-  unsigned long now = micros();
+  unsigned long now = millis();
 
   if (now - lastSampleTime >= sampleInterval) {
     lastSampleTime += sampleInterval;  // avoids drift
@@ -54,9 +54,9 @@ void sendPacket(long encoder, unsigned long timestamp, uint16_t pressure) {
   uint8_t startByte = 0xAA;
 
   Serial.write(startByte);
+  Serial.write((uint8_t*)&pressure, sizeof(pressure));
   Serial.write((uint8_t*)&encoder, sizeof(encoder));
   Serial.write((uint8_t*)&timestamp, sizeof(timestamp));
-  Serial.write((uint8_t*)&pressure, sizeof(pressure));
 }
 
 // ===== Encoder ISR =====

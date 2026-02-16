@@ -4,7 +4,7 @@ Repo du projet Explorascience Machine à traction hydraulique
 
 [Requête à l'IA](https://chatgpt.com/share/69791d74-e6e4-8002-950b-1ab17f0a1ddd)
 
-Guide d'utilisation de GitHub:
+## Guide d'utilisation de GitHub:
 
 - Installer GitHub Desktop
 - Ajouter la Repo dans GitHub Desktop
@@ -16,11 +16,14 @@ Guide d'utilisation de GitHub:
 
 ## Comment utiliser un environnement virtuel (gestion des packages plus facile)
 
-How to check if the virtual envireonnement is selected:
-``Get-Command python``
-``Get-Command pip``
+### How to check if the virtual environnement is selected:
 
-Step 3 — VS Code must use the venv interpreter
+- ``Get-Command python``
+- ``Get-Command pip``
+
+### Activate the .venv (PS) `.venv\Scripts\Activate`
+
+### VS Code must use the venv interpreter
 
 This is separate from terminal activation.
 
@@ -42,10 +45,6 @@ You should see something like:
 
 Python 3.x (.venv)
 
-⚠️ If you skip this step, VS Code may:
-
-Run code with global Python
-
-Use venv in terminal only (or vice versa)
+### To install packages to the venv :
 
 pip install -r requirements.txt
