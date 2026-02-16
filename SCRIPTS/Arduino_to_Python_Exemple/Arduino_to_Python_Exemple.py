@@ -4,6 +4,7 @@ import time as t
 serialInst = serial.Serial()
 serialInst.baudrate = 115200
 portsList = []
+com = []
 
 while len(portsList) == 0:
     ports = serial.tools.list_ports.comports()
@@ -38,7 +39,7 @@ while True:
     if command == "ON" or command == "OFF":
         serialInst.write(command.encode("utf-8"))
     elif command == "STATE":
-        for i in range(10):
+        for i in range(50):
             if serialInst.inWaiting() == 0:
                 pass
             serialInst.reset_input_buffer()
