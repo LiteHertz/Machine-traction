@@ -1,7 +1,7 @@
 // Encoder pins
-const int pinA = 2;  // Encoder output A
-const int pinB = 3;  // Encoder output B
-const int pinP = A0;  // Pression meter
+const int pinA = 2;  // Encoder output A (White wire on board (encoder section))
+const int pinB = 3;  // Encoder output B (Green wire on board (encoder section))
+const int pinP = A0;  // Pression meter (Green wire on board (pressure section))
 
 volatile long encoderPosition = 0;
 volatile bool lastAState;

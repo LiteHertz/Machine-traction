@@ -44,19 +44,21 @@ void loop() {
     // To renable the filter, uncomment the above lines and change the sendPacket line to use filteredPressure instead of rawPressure
     // The line should look like this: sendPacket(encoderPosition, now, (uint16_t)filteredPressure);
 
-    sendPacket(encoderPosition, now, rawPressure);
+    sendPacket(now, rawPressure, encoderPosition);
+    // Ordre des packets: timestamp, pressure, encoder position
   }
 }
 
 // ===== Send Binary Packet =====
-void sendPacket(long encoder, unsigned long timestamp, uint16_t pressure) {
+void sendPacket(unsigned long timestamp, uint16_t pressure, long encoder) {
 
   uint8_t startByte = 0xAA;
 
   Serial.write(startByte);
+  Serial.write((uint8_t*)&timestamp, sizeof(timestamp));
   Serial.write((uint8_t*)&pressure, sizeof(pressure));
   Serial.write((uint8_t*)&encoder, sizeof(encoder));
-  Serial.write((uint8_t*)&timestamp, sizeof(timestamp));
+
 }
 
 // ===== Encoder ISR =====
