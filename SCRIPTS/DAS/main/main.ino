@@ -1,9 +1,9 @@
 // ===== Encoder Pins =====
-const int pinA = 2;
-const int pinB = 3;
+const int pinA = 2; // Encoder output A (White wire on board (encoder section))
+const int pinB = 3; // Encoder output B (Green wire on board (encoder section))
 
 // ===== Analog Pin =====
-const int pressurePin = A0;
+const int pressurePin = A0; // Pressure meter (Green wire on board (pressure section))
 
 // ===== Encoder Variables =====
 volatile long encoderPosition = 0;
