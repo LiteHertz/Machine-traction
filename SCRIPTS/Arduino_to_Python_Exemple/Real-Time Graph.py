@@ -6,29 +6,55 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import ttkbootstrap as ttk
 
-root = ttk.Window("GRAPH", "darkly")
-root.title("GRAPH")
+root = ttk.Window("Machine Essais de Traction", "darkly")
+root.title("Machine Essais de Traction")
 root.geometry("1600x900")
 
-time = [0]
-pressureValueActual = [0]
-displacementValueActual = [0]
+refreshRate = 1000/10
+Sampling = int(refreshRate * 1000)
 
-def values(e):
-    global pressureValueActual
-    pressureValueActual = int(pressureSlider.get())
-    pressureValueLabel.config(text=pressureValueActual)
+time = [float(0)]  * Sampling
+pressureValue = [0] * Sampling
+displacementValue = [0] * Sampling
 
-    global displacementValueActual
-    displacementValueActual = int(displacementSlider.get())
-    displacementValueLabel.config(text=displacementValueActual)
+def graphUpdate():
+    global time
+    global pressureValue
+    global displacementValue
+
+    time = time[1:Sampling]
+    time.append(time[-1] + refreshRate / 1000)
+
+    pressureValue = pressureValue[1:Sampling]
+    pressureValue.append(int(pressureSlider.get()))
+    pressureValueLabel.config(text=pressureValue[-1])
+    displacementValue = displacementValue[1:Sampling]
+    displacementValue.append(int(displacementSlider.get()))
+    displacementValueLabel.config(text=displacementValue[-1])
+
+    pressure_line.set_data(time, pressureValue)
+    displacement_line.set_data(time, displacementValue)
+
+    if len(time) > 1:
+        pressure_plot.set_xlim(time[0], time[-1])
+        displacement_plot.set_xlim(time[0], time[-1])
+
+    pressure_plot.relim()
+    pressure_plot.autoscale_view()
+
+    displacement_plot.relim()
+    displacement_plot.autoscale_view()
+
+    graph.draw_idle()
+
+    root.after(int(refreshRate), graphUpdate)
+
 
 pressureSlider = ttk.Scale(root,
     length=350,
     from_=15,
     to=0,
-    orient="vertical",
-    command=values)
+    orient="vertical")
 pressureSlider.grid(column=0, row=0, pady=10)
 pressureTitleLabel = ttk.Label(root, text="Pressure [MPa]")
 pressureTitleLabel.grid(column=0, row=1, padx=10)
@@ -39,8 +65,7 @@ displacementSlider = ttk.Scale(root,
     length=350,
     from_=150,
     to=0,
-    orient="vertical",
-    command=values)
+    orient="vertical")
 displacementSlider.grid(column=1, row=0, pady=10)
 displacementTitleLabel = ttk.Label(root, text="Displacement [um]")
 displacementTitleLabel.grid(column=1, row=1, padx=10)
@@ -48,49 +73,22 @@ displacementValueLabel = ttk.Label(root, text="0")
 displacementValueLabel.grid(column=1, row=2)
 
 plt.style.use('dark_background')
-graphFigure = plt.figure(figsize=(6, 4))
+graphFigure = plt.figure(figsize=(10, 4))
+graphFigure.subplots_adjust(wspace=0.5)
+
 pressure_plot = graphFigure.add_subplot(1, 2, 1)
 pressure_plot.set_xlabel("Time [s]")
 pressure_plot.set_ylabel("Pressure [MPa]")
+pressure_line, = pressure_plot.plot([], [], label="Pressure")
+
 displacement_plot = graphFigure.add_subplot(1, 2, 2)
 displacement_plot.set_xlabel("Time [s]")
 displacement_plot.set_ylabel("Displacement [um]")
+displacement_line, = displacement_plot.plot([], [], label="Displacement")
 
 graph = FigureCanvasTkAgg(graphFigure, master=root)
 graph.get_tk_widget().grid(row=0, rowspan=3, column=2)
 
-def valueUpdate(frame):
-    global time
-    global pressureValue
-    global displacementValue
-
-    time.append(time[-1]+1)
-    pressure_plot.clear()
-    displacement_plot.clear()
-    pressureValue.append(pressureSlider.get())
-    pressure_plot.plot(time, pressureValue)
-    displacementValue.append(displacementSlider.get())
-    displacement_plot.plot(time, displacementValue)
-
-
-ani = FuncAnimation(graphFigure, valueUpdate, interval=1000)
-
+graphUpdate()
 root.mainloop()
 
-# plt.style.use('dark_background')
-#
-# index = count()
-# x_vals = []
-# y_vals = []
-#
-# def graph(i):
-#     x_vals.append(next(index))
-#     y_vals.append(random.randint(0, 15))
-#
-#     plt.cla()
-#     plt.plot(x_vals, y_vals)
-#
-# root = FuncAnimation(plt.gcf(), graph, interval=1000)
-#
-# plt.tight_layout()
-# plt.show()
