@@ -1,3 +1,4 @@
 pyserials
 pyserial
 ttkbootstrap
+matplotlib

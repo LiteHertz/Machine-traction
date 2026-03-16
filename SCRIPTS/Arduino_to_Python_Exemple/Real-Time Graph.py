@@ -10,8 +10,8 @@ root = ttk.Window("Machine Essais de Traction", "darkly")
 root.title("Machine Essais de Traction")
 root.geometry("1600x900")
 
-refreshRate = 1000/10
-Sampling = int(refreshRate * 1000)
+refreshRate = 1000/100
+Sampling = int(1000)
 
 time = [float(0)]  * Sampling
 pressureValue = [0] * Sampling

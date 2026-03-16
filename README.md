@@ -48,3 +48,5 @@ Python 3.x (.venv)
 ### To install packages to the venv :
 
 pip install -r requirements.txt
+
+## Global variables

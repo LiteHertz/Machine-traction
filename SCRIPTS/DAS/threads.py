@@ -26,7 +26,7 @@ stop_event  = threading.Event()
 
 
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-# HELPER FUNCTIONS  (pure, no side effects)
+# HELPER FUNCTIONS
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 def transform_data(rawPressure, encoderStep):
@@ -111,11 +111,11 @@ def update_recording_state(MPaPressure):
 # THREADS
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
-def data_read_loop(ser):
+def data_read_loop(serial):
     # Reader thread: reads binary packets from Arduino, converts to engineering units, updates recording state, and enqueues data.
     while not stop_event.is_set():
-        if ser.read(1) == b'\xAA':
-            data = ser.read(PACKET_SIZE)
+        if serial.read(1) == b'\xAA':
+            data = serial.read(PACKET_SIZE)
 
             if len(data) == PACKET_SIZE:
                 timestamp, rawPressure, encoderStep = struct.unpack('<LHl', data)
@@ -150,12 +150,12 @@ if __name__ == "__main__":
 
     # --- Setup ---
     com_port  = select_port()
-    ser = serial.Serial(com_port, BAUD_RATE)
+    serial = serial.Serial(com_port, BAUD_RATE)
     time.sleep(2)  # allow Arduino to reset after connection
     print(f"\n{com_port} connected.\n")
 
     # --- Start threads ---
-    reader_thread   = threading.Thread(target=data_read_loop, args=(ser,), daemon=True)
+    reader_thread   = threading.Thread(target=data_read_loop, args=(serial,), daemon=True)
     reader_thread.start()
 
     while True:
@@ -178,5 +178,5 @@ if __name__ == "__main__":
         if again == 'exit' or again == 'e':
             break
 
-    ser.close()
+    serial.close()
     print("Program exited cleanly.")
