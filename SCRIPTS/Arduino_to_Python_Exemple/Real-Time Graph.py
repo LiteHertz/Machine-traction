@@ -1,35 +1,35 @@
-import random
-from itertools import count
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
 import ttkbootstrap as ttk
+import time as t
 
 root = ttk.Window("Machine Essais de Traction", "darkly")
-root.title("Machine Essais de Traction")
 root.geometry("1600x900")
 
-refreshRate = 1000/100
+refreshRate = 100
+refreshTime = 1000/refreshRate
 Sampling = int(1000)
 
-time = [float(0)]  * Sampling
-pressureValue = [0] * Sampling
-displacementValue = [0] * Sampling
+time = [float(0)] * Sampling
+pressureValue = [float(0)] * Sampling
+displacementValue = [float(0)] * Sampling
+
+after_id = []
 
 def graphUpdate():
     global time
     global pressureValue
     global displacementValue
+    global after_id
 
     time = time[1:Sampling]
-    time.append(time[-1] + refreshRate / 1000)
+    time.append(time[-1] + refreshTime / 1000)
 
     pressureValue = pressureValue[1:Sampling]
-    pressureValue.append(int(pressureSlider.get()))
+    pressureValue.append(round(pressureSlider.get(),2))
     pressureValueLabel.config(text=pressureValue[-1])
     displacementValue = displacementValue[1:Sampling]
-    displacementValue.append(int(displacementSlider.get()))
+    displacementValue.append(round(displacementSlider.get(),2))
     displacementValueLabel.config(text=displacementValue[-1])
 
     pressure_line.set_data(time, pressureValue)
@@ -47,8 +47,13 @@ def graphUpdate():
 
     graph.draw_idle()
 
-    root.after(int(refreshRate), graphUpdate)
+    after_id = root.after(int(refreshTime), graphUpdate)
 
+def close_app():
+    global after_id
+    root.after_cancel(after_id)
+    root.destroy()
+    exit()
 
 pressureSlider = ttk.Scale(root,
     length=350,
@@ -58,7 +63,7 @@ pressureSlider = ttk.Scale(root,
 pressureSlider.grid(column=0, row=0, pady=10)
 pressureTitleLabel = ttk.Label(root, text="Pressure [MPa]")
 pressureTitleLabel.grid(column=0, row=1, padx=10)
-pressureValueLabel = ttk.Label(root, text="0")
+pressureValueLabel = ttk.Label(root, text=str(pressureSlider.get()))
 pressureValueLabel.grid(column=0, row=2)
 
 displacementSlider = ttk.Scale(root,
@@ -69,8 +74,11 @@ displacementSlider = ttk.Scale(root,
 displacementSlider.grid(column=1, row=0, pady=10)
 displacementTitleLabel = ttk.Label(root, text="Displacement [um]")
 displacementTitleLabel.grid(column=1, row=1, padx=10)
-displacementValueLabel = ttk.Label(root, text="0")
+displacementValueLabel = ttk.Label(root, text=str(displacementSlider.get()))
 displacementValueLabel.grid(column=1, row=2)
+
+exitButton = ttk.Button(root, text="EXIT", command=close_app)
+exitButton.grid(row=3, column=0, columnspan=2, padx=10)
 
 plt.style.use('dark_background')
 graphFigure = plt.figure(figsize=(10, 4))
@@ -91,4 +99,6 @@ graph.get_tk_widget().grid(row=0, rowspan=3, column=2)
 
 graphUpdate()
 root.mainloop()
+
+
 

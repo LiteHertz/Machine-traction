@@ -60,7 +60,7 @@ def color_changing_title():
 buttonFrame = ttk.Frame(root)
 buttonFrame.grid(row=2, column=0, columnspan=3)
 
-buttonGreen = ttk.Button(buttonFrame, text="Green", command=lambda: toggle(led=ledGreen,color="green"), width=6)
+buttonGreen = ttk.Button(buttonFrame, text="Green", command=lambda: toggle(led=ledGreen,color="light green"), width=6)
 buttonGreen.grid(row=0, column=0, padx=10)
 
 buttonYellow = ttk.Button(buttonFrame, text="Yellow", command=lambda: toggle(led=ledYellow,color="yellow"), width=6)
@@ -72,4 +72,5 @@ buttonRed.grid(row=0, column=2, padx=10)
 
 color_changing_title()
 root.mainloop()
+exit()
 
