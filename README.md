@@ -50,3 +50,25 @@ Python 3.x (.venv)
 pip install -r requirements.txt
 
 ## Global variables
+
+### Thresholds
+
+- START_THRESHOLD
+- STOP_THRESHOLD
+- PEAK_THRESHOLD
+
+### Arduino comunnication
+
+- BAUD_RATE
+- PACKET_SIZE
+
+### Incoming data
+
+- MPaPressure
+
+### Raw inoming data
+
+- rawPressure
+- encoderStep
+
+
