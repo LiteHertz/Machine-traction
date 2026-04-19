@@ -71,4 +71,6 @@ pip install -r requirements.txt
 - rawPressure
 - encoderStep
 
+### Gui refresh time (should be fixed)
 
+- refresh_time
