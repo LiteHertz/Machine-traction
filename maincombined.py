@@ -17,9 +17,12 @@ PEAK_THRESHOLD  = 15.0   # MPa — must be reached before stop is allowed
 BAUD_RATE       = 115200
 PACKET_SIZE     = 10     # bytes after start byte
 
+
+
 gui_refresh_time = 50
 
-
+# needed for after_cancel to work properly
+after_id = None
 
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 # SHARED STATE  (queue, event, flags)
@@ -46,11 +49,24 @@ def set_default_csv_filename():
     return f"data_{time.strftime('%Y%m%d-%H%M%S')}.csv"
 
 def close_app():
-    root.after_cancel(after_id)   # stop the scheduled GUI update
-    stop_event.set()              # signal reader thread to exit its loop
-    reader_thread.join(timeout=2) # wait for it to finish (2s max)
-    serial.close()                   # release the serial port
-    root.destroy()                # close the window
+    global after_id
+    stop_event.set() # signal reader thread to exit its loop
+    try:
+        root.after_cancel(after_id)   # stop the scheduled GUI update
+        reader_thread.join(timeout=2) # wait for it to finish (2s max)
+        serial.close()
+    except:
+        pass
+    root.destroy() # close the window
+    print("Program exited cleanly.")
+    exit()
+
+def serial_connect():
+    if 0 == 0:
+        return
+    else:
+        return
+
 
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 # SETUP  (runs before threads start)
@@ -90,8 +106,34 @@ def get_csv_filename():
 # GUI
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
-def gui_update ():
+def build_gui ():
     root.protocol("WM_DELETE_WINDOW", lambda: close_app())
+
+    main_title_label = ttk.Label(root, text="Machine à Essais de Traction", font=("Helvetica", 16))
+    # Port selection
+    port_dropdown = ttk.Combobox(root)
+    start_stop_button = ttk.Button(root, text="Start/Stop")
+    reset_button = ttk.Button(root, text="Reset")
+    exit_button = ttk.Button(root, text="Exit", command=close_app)
+
+
+    main_title_label.grid(row=0, column=0, columnspan=9, pady=10)
+    port_dropdown.grid(row=8, column=5, pady=10)
+    start_stop_button.grid(row=8, column=6, pady=10)
+    reset_button.grid(row=8, column=7, pady=10)
+    exit_button.grid(row=8, column=8, pady=10)
+
+    def gui_update():
+        global after_id
+        # Update graphs and everything else here
+        ports = list(serial.tools.list_ports.comports())
+        port_dropdown['values'] = ports
+        serial_connect()
+
+
+        after_id = root.after(gui_refresh_time, gui_update)
+    
+    gui_update() 
 
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 # RECORDING STATE CONTROLLER
@@ -164,21 +206,21 @@ def csv_write_loop(file_name):
 
 if __name__ == "__main__":
 
-    # Setup Serial
-    com_port  = select_port()
-    serial = serial.Serial(com_port, BAUD_RATE)
-    time.sleep(2)  # allow Arduino to reset after connection
-    print(f"\n{com_port} connected.\n")
+    # Setup GUI
+    root = ttk.Window("Machine Essais de Traction", "darkly")
+    build_gui()
+    print("GUI initialized.")
+    root.mainloop()
 
-    # --- Start threads ---
+    # Start threads
     reader_thread   = threading.Thread(target=data_read_loop, args=(serial,), daemon=True)
     reader_thread.start()
 
-    # Setup GUI
-    gui_update()
-    root = ttk.Window("Machine Essais de Traction", "darkly")
-    after_id = root.after(gui_refresh_time, gui_update)
-    root.mainloop()
+    # Setup Serial
+    #com_port  = select_port()
+    #serial = serial.Serial(com_port, BAUD_RATE)
+    #time.sleep(2)  # allow Arduino to reset after connection
+    #print(f"\n{com_port} connected.\n")
 
     while True:
         stop_event.clear()
@@ -199,6 +241,3 @@ if __name__ == "__main__":
         again = input("\nRun another test? (Enter to continue, exit to exit): ").strip().lower()
         if again == 'exit' or again == 'e':
             break
-
-    serial.close()
-    print("Program exited cleanly.")
