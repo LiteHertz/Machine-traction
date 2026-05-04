@@ -10,11 +10,11 @@ import queue
 # CONFIGURATION
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
-START_THRESHOLD = 1.0    # MPa — pressure to begin recording
-STOP_THRESHOLD  = 1.0    # MPa — pressure to end recording (only after peak)
-PEAK_THRESHOLD  = 15.0   # MPa — must be reached before stop is allowed
+START_THRESHOLD = 0.5 # MPa — pressure to begin recording
+STOP_THRESHOLD  = 0.5 # MPa — pressure to end recording (only after peak)
+PEAK_THRESHOLD  = 1 # MPa — must be reached before stop is allowed
 BAUD_RATE       = 115200
-PACKET_SIZE     = 10     # bytes after start byte
+PACKET_SIZE     = 10 # bytes after start byte
 
 
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====

@@ -39,6 +39,8 @@ print(f"{com_port} connected.\n")
 # ===== Read Data =====
 PACKET_SIZE = 10  # after start byte
 
+n=0
+
 while True:
     if ser.read(1) == b'\xAA':
         data = ser.read(PACKET_SIZE)
@@ -48,4 +50,7 @@ while True:
             voltsPressure = rawPressure / 1023 * 5 # Bring to ratio over 1 and then multiply by 5V to get the actual voltage reading from the pressure sensor.
             MPaPressure = (voltsPressure - 0.5) * 3.75
             mmDisplacement = encoderStep * 0.05 / 2
-            print(timestamp, rawPressure, encoderStep,  " // ",f"{voltsPressure:.5f}", "V, " f"{MPaPressure:.5f}", "MPa, ", f"{mmDisplacement:.5f}", "mm") #f"{}" is used to format the output, the .5f means to show 5 decimal places.
+            if n == 10:
+                print(timestamp, rawPressure, encoderStep,  " // ",f"{voltsPressure:.5f}", "V, " f"{MPaPressure:.5f}", "MPa, ", f"{mmDisplacement:.5f}", "mm") #f"{}" is used to format the output, the .5f means to show 5 decimal places.
+                n=0
+            n+=1

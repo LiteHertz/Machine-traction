@@ -4,6 +4,7 @@ const int pinB = 3; // Encoder output B (Green wire on board (encoder section))
 
 // ===== Analog Pin =====
 const int pressurePin = A0; // Pressure meter (Green wire on board (pressure section))
+const int referencePin = A5; // Pressure Reference meter
 
 // ===== Encoder Variables =====
 volatile long encoderPosition = 0;
