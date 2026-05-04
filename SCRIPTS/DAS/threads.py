@@ -23,6 +23,8 @@ PACKET_SIZE     = 10 # bytes after start byte
 
 data_queue  = queue.Queue()
 stop_event  = threading.Event()
+shutdown_event = threading.Event()
+recording_enabled = threading.Event() # global flag to enable/disable recording for the current test run
 
 
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -39,7 +41,7 @@ def transform_data(rawPressure, encoderStep):
 
 def set_default_csv_filename():
     # Generate a timestamped default filename.
-    return f"data_{time.strftime('%Y%m%d-%H%M%S')}.csv"
+    return f"data/data_{time.strftime('%Y%m%d-%H%M%S')}.csv" # TO REDO
 
 
 # ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -103,6 +105,7 @@ def update_recording_state(MPaPressure):
     # Stop recording — only allowed after peak was seen
     if recording and peak_reached and MPaPressure <= STOP_THRESHOLD:
         recording = False
+        recording_enabled.clear()
         stop_event.set()
         print(f"  [-] Recording stopped  ({MPaPressure:.2f} MPa)")
 
@@ -113,13 +116,18 @@ def update_recording_state(MPaPressure):
 
 def data_read_loop(serial):
     # Reader thread: reads binary packets from Arduino, converts to engineering units, updates recording state, and enqueues data.
-    while not stop_event.is_set():
+    global file_name
+
+    while not shutdown_event.is_set():
         if serial.read(1) == b'\xAA':
             data = serial.read(PACKET_SIZE)
 
             if len(data) == PACKET_SIZE:
                 timestamp, rawPressure, encoderStep = struct.unpack('<LHl', data)
                 MPaPressure, mmDisplacement = transform_data(rawPressure, encoderStep)
+
+                if not recording_enabled.is_set():
+                    continue
 
                 update_recording_state(MPaPressure)
 
@@ -155,27 +163,30 @@ if __name__ == "__main__":
     print(f"\n{com_port} connected.\n")
 
     # --- Start threads ---
-    reader_thread   = threading.Thread(target=data_read_loop, args=(serial,), daemon=True)
+    reader_thread = threading.Thread(target=data_read_loop, args=(serial,), daemon=True)
     reader_thread.start()
 
     while True:
         stop_event.clear()
         recording = False
         peak_reached = False
+        recording_enabled.clear()
 
         file_name = get_csv_filename()
         print("Waiting for pressure to exceed threshold...\n")
 
-        # Relaunch recorder thread (reader stays alive the whole time)
         recorder_thread = threading.Thread(target=csv_write_loop, args=(file_name,))
         recorder_thread.start()
+
+        recording_enabled.set() # allow reader to start enqueuing data
 
         # Wait for this run to finish naturally (via stop_event)
         recorder_thread.join()
 
-         # Ask if another run is needed
+        # Ask if another run is needed
         again = input("\nRun another test? (Enter to continue, exit to exit): ").strip().lower()
         if again == 'exit' or again == 'e':
+            shutdown_event.set()
             break
 
     serial.close()
