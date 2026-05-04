@@ -33,7 +33,7 @@ recording_enabled = threading.Event() # global flag to enable/disable recording 
 
 def transform_data(rawPressure, encoderStep):
     # Convert raw Arduino values to engineering units.
-    voltsPressure  = rawPressure / 1023 * 5          # 0-1023 → 0-5 V
+    voltsPressure  = rawPressure / (2^14)-1 * 5          # 0-1023 → 0-5 V
     MPaPressure    = (voltsPressure - 0.5) * 3.75     # 0.5-4.5 V → 0-15 MPa
     mmDisplacement = encoderStep * 0.05 / 2           # steps → mm
     return MPaPressure, mmDisplacement
