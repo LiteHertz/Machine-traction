@@ -22,6 +22,7 @@ unsigned long lastSampleTime = 0;
 void setup() {
   pinMode(pinA, INPUT);
   pinMode(pinB, INPUT);
+  analogReadResolution(14);
 
   lastAState = digitalRead(pinA);
   attachInterrupt(digitalPinToInterrupt(pinA), updateEncoder, CHANGE);
