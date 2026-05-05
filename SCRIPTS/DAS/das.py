@@ -47,7 +47,7 @@ while True:
 
         if len(data) == PACKET_SIZE:
             timestamp, rawPressure, encoderStep = struct.unpack('<LHl', data) # The < means little-endian, l is a 4-byte signed int, L is a 4-byte unsigned int, H is a 2-byte unsigned int. They have to be in the right order to match how the data is packed on the Arduino side.
-            voltsPressure = rawPressure / (2^14)-1 * 5 # Bring to ratio over 1 and then multiply by 5V to get the actual voltage reading from the pressure sensor.
+            voltsPressure = rawPressure / (2**14-1) * 5 # Bring to ratio over 1 and then multiply by 5V to get the actual voltage reading from the pressure sensor.
             MPaPressure = (voltsPressure - 0.5) * 3.75
             mmDisplacement = encoderStep * 0.05 / 2
             if n == 250:
